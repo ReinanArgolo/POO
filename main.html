@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Interativo: POO III com Python</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Calm Harmony (Stone/Indigo) -->
+    <!-- Application Structure Plan: SPA com navegação lateral (sidebar) e área de conteúdo principal. A sidebar lista os capítulos (Cap 1-6) e uma introdução. Clicar em um capítulo atualiza a área de conteúdo principal (via JS) para exibir apenas o texto, diagramas (HTML/Unicode) e exemplos de código daquele capítulo. Esta estrutura foi escolhida por ser a mais intuitiva para um documento de estudo/referência, permitindo acesso rápido e não linear aos tópicos, ao contrário da leitura passiva de um documento linear. -->
+    <!-- Visualization & Content Choices:
+        - Relatório (Todo): Conteúdo textual -> HTML <p>, <ul>, <table>. Interação: Navegação na sidebar, botões "Copiar Código". Justificativa: Estrutura semântica e acessível para material de estudo.
+        - Relatório (2.1 & 4.3): Diagramas (Agregação, Diamante) -> HTML/Tailwind/Unicode. Interação: N/A (Visual). Justificativa: Substitui gráficos (SVG/Mermaid proibidos) para explicar conceitos de arquitetura.
+        - Relatório (Cap 5): Funções Matemáticas -> Chart.js Line Chart (Canvas). Interação: Hover (tooltips). Justificativa: Traduz o conceito matemático abstrato (f(x)) em uma visualização concreta e interativa, melhorando a compreensão.
+        - CONFIRMADO: NO SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        /* Estilo para o botão de navegação ativo */
+        .nav-button.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: #ffffff;
+            font-weight: 600;
+        }
+        /* Estilo para os blocos de código */
+        pre {
+            background-color: #1f2937; /* gray-800 */
+            color: #d1d5db; /* gray-300 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+        .code-block {
+            position: relative;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .copy-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #4b5563; /* gray-600 */
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .copy-button:hover {
+            background-color: #6b7280; /* gray-500 */
+        }
+        .copy-button:active {
+            background-color: #374151; /* gray-700 */
+        }
+        /* Estilo para o container do gráfico */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 64rem; /* max-w-2xl */
+            margin-left: auto;
+            margin-right: auto;
+            height: 24rem; /* h-96 */
+            max-height: 400px;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md p-4 sticky top-0 z-10 flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-indigo-600">Guia Interativo: POO III com Python</h1>
+        <button id="menu-toggle" class="md:hidden p-2 rounded-md text-stone-700 hover:bg-stone-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+        </button>
+    </header>
+
+    <!-- Layout Principal -->
+    <div class="flex flex-col md:flex-row">
+        
+        <!-- Sidebar de Navegação -->
+        <aside id="sidebar" class="w-full md:w-64 bg-white p-4 space-y-2 border-r border-stone-200 md:h-screen md:sticky md:top-[68px] absolute md:relative -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out z-20">
+            <button class="nav-button active w-full text-left px-4 py-2 rounded-md hover:bg-stone-100 transition-colors" data-target="intro">
+                Introdução
+            </button>
+            <button class="nav-button w-full text-left px-4 py-2 rounded-md hover:bg-stone-100 transition-colors" data-target="cap1">
+                Cap 1: Herança e ABC
+            </button>
+            <button class="nav-button w-full text-left px-4 py-2 rounded-md hover:bg-stone-100 transition-colors" data-target="cap2">
+                Cap 2: Agregação e Composição
+            </button>
+            <button class="nav-button w-full text-left px-4 py-2 rounded-md hover:bg-stone-100 transition-colors" data-target="cap3">
+                Cap 3: Interfaces e Protocolos
+            </button>
+            <button class="nav-button w-full text-left px-4 py-2 rounded-md hover:bg-stone-100 transition-colors" data-target="cap4">
+                Cap 4: Mixins e Herança Múltipla
+            </button>
+            <button class="nav-button w-full text-left px-4 py-2 rounded-md hover:bg-stone-100 transition-colors" data-target="cap5">
+                Cap 5: Modelo Matemático
+            </button>
+            <button class="nav-button w-full text-left px-4 py-2 rounded-md hover:bg-stone-100 transition-colors" data-target="cap6">
+                Cap 6: Design OO (Python vs Java)
+            </button>
+        </aside>
+
+        <!-- Overlay para fechar menu mobile -->
+        <div id="overlay" class="fixed inset-0 bg-black/30 z-10 md:hidden hidden"></div>
+
+        <!-- Área de Conteúdo Principal -->
+        <main id="content-area" class="flex-1 p-6 md:p-10">
+
+            <!-- Introdução -->
+            <section id="intro" class="content-section space-y-6 bg-white p-6 md:p-8 rounded-lg shadow">
+                <h2 class="text-3xl font-bold border-b pb-2 text-indigo-700">Bem-vindo ao Guia Interativo de POO III</h2>
+                <p class="text-lg">Este é um guia de revisão intensivo focado nos tópicos avançados de Programação Orientada a Objetos (POO) aplicados à linguagem Python.</p>
+                <p>Use a navegação ao lado para explorar os capítulos. Cada capítulo aborda um conceito essencial para a prova, com teoria, exemplos práticos e exercícios para fixação.</p>
+                <p class="text-base">Este SPA foi gerado para transformar o documento de estudo em uma ferramenta de aprendizado mais dinâmica e acessível.</p>
+                <div class="mt-6 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
+                    <h3 class="text-lg font-semibold text-indigo-800">Recursos Interativos:</h3>
+                    <ul class="list-disc list-inside mt-2 text-indigo-700">
+                        <li><strong>Navegação Rápida:</strong> Alterne entre os capítulos instantaneamente.</li>
+                        <li><strong>Copiar Código:</strong> Use o botão "Copiar" nos blocos de código.</li>
+                        <li><strong>Visualização de Dados:</strong> O Capítulo 5 inclui um gráfico interativo das funções matemáticas.</li>
+                    </ul>
+                </div>
+            </section>
+            
+            <!-- Capítulo 1 -->
+            <section id="cap1" class="content-section space-y-6 bg-white p-6 md:p-8 rounded-lg shadow hidden">
+                <h2 class="text-3xl font-bold border-b pb-2 text-indigo-700">CAPÍTULO 1: Herança, Classes Abstratas e Reutilização de Código</h2>
+                <p>Neste capítulo, revisamos o pilar da reutilização de código em POO: a Herança. Vamos entender como criar hierarquias de classes e como forçar contratos usando Classes Abstratas.</p>
+
+                <h3 class="text-2xl font-semibold pt-4">1.1 O que é Herança?</h3>
+                <p>Herança é um mecanismo que permite que uma classe (chamada de <strong>subclasse</strong> ou <strong>classe filha</strong>) adquira os atributos e métodos de outra classe (chamada de <strong>superclasse</strong> ou <strong>classe mãe</strong>).</p>
+                <p>O principal benefício é a reutilização de código. A relação é conhecida como "é um" (ou "is-a"). Por exemplo, um <code>Cachorro</code> <strong>é um</strong> <code>Animal</code>.</p>
+                <div class="p-4 bg-stone-50 rounded-md border border-stone-200">
+                    <h4 class="font-semibold text-stone-700">Analogia:</h4>
+                    <p class="mt-1">Pense na herança biológica. Você herda características dos seus pais (cor dos olhos, tipo sanguíneo), mas também possui suas próprias características únicas. Em POO, a subclasse herda o "DNA" (código) da superclasse e pode adicionar seu próprio comportamento ou modificar (sobrescrever) o comportamento herdado.</p>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">1.2 O Papel do <code>super()</code></h3>
+                <p>Quando sobrescrevemos um método (como o <code>__init__</code>), muitas vezes ainda queremos executar o código original da classe mãe. A função <code>super()</code> nos dá acesso à classe mãe, permitindo chamar seus métodos.</p>
+                
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+# Exemplo de Herança Simples e super()
+
+class Funcionario:
+    """Classe Mãe (Superclasse)"""
+    def __init__(self, nome, salario_base):
+        self.nome = nome
+        self.salario_base = salario_base
+        print(f"-> Construtor de Funcionario chamado para {self.nome}")
+
+    def calcular_salario(self):
+        """Método que pode ser herdado ou sobrescrito."""
+        return self.salario_base
+
+class Gerente(Funcionario):
+    """Classe Filha (Subclasse)"""
+    def __init__(self, nome, salario_base, bonus):
+        print(f"-> Construtor de Gerente iniciando...")
+        # Chama o __init__ da classe mãe (Funcionario)
+        # para inicializar 'nome' e 'salario_base'.
+        super().__init__(nome, salario_base) 
+        
+        # Adiciona o novo atributo específico de Gerente
+        self.bonus = bonus
+        print(f"-> Construtor de Gerente finalizado para {self.nome}")
+
+    def calcular_salario(self):
+        """
+        Sobrescreve (Override) o método da classe mãe.
+        Mas ainda usa o método original com super() para obter o salário base.
+        """
+        salario_pai = super().calcular_salario()
+        salario_total = salario_pai + self.bonus
+        print(f"Calculando salário para Gerente {self.nome}: Base({salario_pai}) + Bônus({self.bonus})")
+        return salario_total
+
+# --- Testando ---
+print("Criando Gerente 'Ana'...")
+ana = Gerente("Ana", 5000, 1500)
+print("\nCalculando salário de 'Ana'...")
+print(f"Salário final: R$ {ana.calcular_salario():.2f}")
+
+print("\nCriando Funcionario 'Bruno'...")
+bruno = Funcionario("Bruno", 3000)
+print("\nCalculando salário de 'Bruno'...")
+print(f"Salário final: R$ {bruno.calcular_salario():.2f}")
+</code></pre>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">1.3 Herança Simples vs. Múltipla</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Herança Simples:</strong> A subclasse herda de <strong>apenas uma</strong> superclasse. (Ex: <code>Gerente</code> herda de <code>Funcionario</code>). É o tipo mais comum e seguro de herança.</li>
+                    <li><strong>Herança Múltipla:</strong> A subclasse herda de <strong>duas ou mais</strong> superclasses. (Ex: <code>EstagiarioTI</code> pode herdar de <code>Funcionario</code> e <code>Estudante</code>). É poderosa, mas complexa. Veremos em detalhes no Capítulo 4 (Mixins).</li>
+                </ul>
+
+                <h3 class="text-2xl font-semibold pt-4">1.4 Classes Abstratas (ABCs)</h3>
+                <p>E se quiséssemos *garantir* que toda classe filha de <code>Funcionario</code> *obrigatoriamente* implemente o método <code>calcular_salario</code>?</p>
+                <p>Uma <strong>Classe Base Abstrata</strong> (Abstract Base Class, ou ABC) é um modelo. Ela define quais métodos uma subclasse *deve* ter, mas não diz *como* esses métodos devem funcionar.</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>Não podemos instanciar uma ABC (Ex: <code>nao_pode = Funcionario(...)</code>).</li>
+                    <li>Usamos o módulo <code>abc</code> de Python.</li>
+                    <li><code>abc.ABC</code>: Marca a classe como abstrata.</li>
+                    <li><code>@abc.abstractmethod</code>: Marca um método como abstrato.</li>
+                </ul>
+
+                <h3 class="text-2xl font-semibold pt-4">1.5 Exemplo Completo: Hierarquia de Veículos</h3>
+                <p>Vamos criar um modelo onde <code>Veiculo</code> é uma classe abstrata que força todas as subclasses a terem os métodos <code>ligar()</code> e <code>acelerar()</code>.</p>
+                
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+import abc
+
+class Veiculo(abc.ABC):
+    """
+    CLASSE BASE ABSTRATA (ABC)
+    Define o "contrato" que todo veículo deve seguir.
+    Não pode ser instanciada diretamente.
+    """
+    def __init__(self, marca, modelo):
+        self.marca = marca
+        self.modelo = modelo
+        self._ligado = False # Atributo protegido
+
+    @abc.abstractmethod
+    def ligar(self):
+        """Método abstrato: toda subclasse DEVE implementar."""
+        print(f"Método 'ligar' genérico sendo chamado...")
+        self._ligado = True
+
+    @abc.abstractmethod
+    def acelerar(self):
+        """Método abstrato: toda subclasse DEVE implementar."""
+        pass # Nenhuma lógica aqui, só a assinatura
+
+    def frear(self):
+        """Método concreto: herdado por todas as subclasses."""
+        print(f"O {self.modelo} está freando (método da classe mãe).")
+
+# --- Subclasses Concretas ---
+
+class Carro(Veiculo):
+    """Implementação concreta de Veiculo"""
+    
+    def ligar(self):
+        # Chama a lógica da classe mãe se quisermos
+        super().ligar() 
+        print(f"O {self.modelo} ligou. Vrum vrum!")
+
+    def acelerar(self):
+        if not self._ligado:
+            print(f"Não pode acelerar o {self.modelo}, está desligado.")
+            return
+        print(f"O Carro {self.modelo} está acelerando... Rápido!")
+
+class Motocicleta(Veiculo):
+    """Outra implementação concreta de Veiculo"""
+    
+    def ligar(self):
+        super().ligar()
+        print(f"A {self.modelo} ligou. Randandan!")
+
+    def acelerar(self):
+        if not self._ligado:
+            print(f"Não pode acelerar a {self.modelo}, está desligada.")
+            return
+        print(f"A Moto {self.modelo} está acelerando... Veloz!")
+
+# --- 1.6 Polimorfismo em Ação ---
+
+# Polimorfismo ("muitas formas") é a capacidade de tratar objetos
+# de classes diferentes da mesma maneira, desde que sigam o
+# mesmo contrato (neste caso, a ABC Veiculo).
+
+print("--- Demonstração de Polimorfismo ---")
+
+# Criamos uma lista de objetos heterogêneos (tipos diferentes)
+garagem = [
+    Carro("Ford", "Ka"),
+    Motocicleta("Honda", "CB500"),
+    Carro("Tesla", "Model S")
+]
+
+# Tratamos todos da mesma forma (como 'Veiculo')
+for v in garagem:
+    print(f"\n--- Testando {v.marca} {v.modelo} ---")
+    v.acelerar() # Tenta acelerar desligado
+    v.ligar()    # Liga (implementação específica)
+    v.acelerar() # Acelera (implementação específica)
+    v.frear()    # Freia (implementação da classe mãe)
+    print(f"Tipo do objeto: {type(v)}")
+
+# --- Tentativa de Instanciar a ABC ---
+# A linha abaixo causará um TypeError, o que é o esperado!
+# print("\nTentando instanciar a ABC...")
+# veiculo_fantasma = Veiculo("Fantasma", "Generic")
+</code></pre>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">1.7 Resumo do Capítulo 1</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Herança (is-a):</strong> Permite reutilizar código de uma classe mãe.</li>
+                    <li><strong><code>super()</code>:</strong> Permite chamar métodos da classe mãe (ou, mais precisamente, o próximo método na ordem de resolução).</li>
+                    <li><strong>ABC (Classe Abstrata):</strong> Um contrato que define *o que* as subclasses devem fazer (<code>@abstractmethod</code>), mas não *como*.</li>
+                    <li><strong>Polimorfismo:</strong> A capacidade de usar uma interface única (a classe mãe/ABC) para interagir com diferentes tipos de objetos (as classes filhas).</li>
+                </ul>
+
+                <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <h3 class="text-lg font-semibold text-amber-800">Exercícios Propostos (Capítulo 1)</h3>
+                    <ol class="list-decimal list-inside mt-2 text-amber-700 space-y-1">
+                        <li>Crie uma ABC chamada <code>FormaGeometrica</code> com um método abstrato <code>calcular_area()</code>.</li>
+                        <li>Implemente duas classes concretas: <code>Quadrado</code> (que recebe <code>lado</code> no construtor) e <code>Circulo</code> (que recebe <code>raio</code> no construtor), ambas herdando de <code>FormaGeometrica</code>.</li>
+                        <li>Crie uma lista contendo um <code>Quadrado</code> e um <code>Circulo</code> e, usando polimorfismo, imprima a área de cada forma.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Capítulo 2 -->
+            <section id="cap2" class="content-section space-y-6 bg-white p-6 md:p-8 rounded-lg shadow hidden">
+                <h2 class="text-3xl font-bold border-b pb-2 text-indigo-700">CAPÍTULO 2: Agregação e Composição</h2>
+                <p>Herança (Cap. 1) define uma relação "é um". Agregação e Composição definem relações "tem um" (ou "has-a"). A diferença entre elas é sutil, mas crucial, e está ligada ao <strong>ciclo de vida</strong> dos objetos.</p>
+
+                <h3 class="text-2xl font-semibold pt-4">2.1 Conceitos: "Tem um" vs. "É parte de"</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Agregação (Tem um):</strong> Relação fraca. Um objeto "agrega" outro, mas eles têm ciclos de vida independentes. Se o objeto "pai" (agregador) for destruído, o objeto "filho" (agregado) continua existindo.</li>
+                    <li><strong>Composição (É parte de):</strong> Relação forte. Um objeto "compõe" outro. O objeto "filho" (componente) *não existe* sem o objeto "pai" (compositor). Se o "pai" for destruído, o "filho" é destruído junto.</li>
+                </ul>
+                
+                <h4 class="text-xl font-semibold pt-2">Diagrama / Analogia Visual</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Diagrama Agregação -->
+                    <div class="p-4 bg-stone-50 rounded-md border border-stone-200">
+                        <h5 class="font-semibold text-stone-700 text-lg">[Agregação] (Fraca)</h5>
+                        <p class="mt-2">Uma Equipe "tem" Jogadores.</p>
+                        <div class="flex items-center justify-center space-x-4 my-4 p-4 bg-white rounded">
+                            <span class="border border-blue-500 bg-blue-100 text-blue-800 px-3 py-1 rounded">Equipe de Futebol</span>
+                            <span class="text-blue-500 font-bold text-2xl">→</span>
+                            <span class="border border-blue-500 bg-blue-100 text-blue-800 px-3 py-1 rounded">Jogador</span>
+                        </div>
+                        <p class="text-sm">Se a Equipe for desfeita, o Jogador continua existindo.</p>
+                        <p class="font-medium mt-1"><em>Ciclo de vida independente.</em></p>
+                    </div>
+                    <!-- Diagrama Composição -->
+                    <div class="p-4 bg-stone-50 rounded-md border border-stone-200">
+                        <h5 class="font-semibold text-stone-700 text-lg">[Composição] (Forte)</h5>
+                        <p class="mt-2">Uma Casa "é composta por" Quartos.</p>
+                        <div class="flex items-center justify-center space-x-4 my-4 p-4 bg-white rounded">
+                            <span class="border border-purple-500 bg-purple-100 text-purple-800 px-3 py-1 rounded">Casa</span>
+                            <span class="text-purple-500 font-bold text-2xl">◆→</span>
+                            <span class="border border-purple-500 bg-purple-100 text-purple-800 px-3 py-1 rounded">Quarto</span>
+                        </div>
+                        <p class="text-sm">Se a Casa for demolida, o Quarto deixa de existir.</p>
+                        <p class="font-medium mt-1"><em>Ciclo de vida dependente.</em></p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">2.2 Agregação: Exemplo (Curso e Alunos)</h3>
+                <p>Um <code>Curso</code> "tem" <code>Alunos</code>. Os alunos já existem antes do curso e continuarão existindo depois. O <code>Curso</code> apenas os "agrega".</p>
+                <p>Na prática, isso significa que o objeto <code>Aluno</code> é criado <strong>fora</strong> da classe <code>Curso</code> e passado como referência (ex: no construtor ou em um método <code>add_aluno</code>).</p>
+                
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+class Aluno:
+    """Objeto independente."""
+    def __init__(self, nome, matricula):
+        self.nome = nome
+        self.matricula = matricula
+        print(f"Aluno '{self.nome}' (Mat. {self.matricula}) criado.")
+
+    def __del__(self):
+        """Método chamado quando o objeto é destruído."""
+        print(f"Aluno '{self.nome}' sendo destruído. (Objeto independente)")
+
+class Curso:
+    """
+    Objeto Agregador.
+    Ele 'tem' alunos, mas não é 'dono' deles.
+    """
+    def __init__(self, nome_curso):
+        self.nome_curso = nome_curso
+        self.alunos_matriculados = [] # Lista de referências
+        print(f"Curso '{self.nome_curso}' criado.")
+
+    def matricular_aluno(self, aluno: Aluno):
+        """Recebe um objeto Aluno que já existe."""
+        print(f"Matriculando '{aluno.nome}' em '{self.nome_curso}'...")
+        self.alunos_matriculados.append(aluno)
+
+    def __del__(self):
+        print(f"Curso '{self.nome_curso}' sendo destruído.")
+
+# --- Testando a Agregação ---
+print("--- Criando objetos independentes ---")
+aluno_joao = Aluno("João", 101)
+aluno_maria = Aluno("Maria", 102)
+
+print("\n--- Criando o agregador ---")
+curso_poo = Curso("POO III")
+curso_poo.matricular_aluno(aluno_joao)
+curso_poo.matricular_aluno(aluno_maria)
+
+print("\n--- Destruindo o agregador (Curso) ---")
+# Vamos deletar a referência ao curso.
+# O 'Garbage Collector' do Python eventualmente o destruirá.
+del curso_poo 
+
+# NOTE: Dependendo do interpretador Python, a mensagem de __del__
+# pode aparecer agora ou só no final do script.
+# O importante é que os objetos 'aluno_joao' e 'aluno_maria'
+# AINDA EXISTEM e estão acessíveis.
+
+print("\n--- Objetos Aluno ainda existem ---")
+print(f"Aluno vivo: {aluno_joao.nome}")
+print(f"Aluno vivo: {aluno_maria.nome}")
+print("--- Fim do script (agora os alunos serão destruídos) ---")
+</code></pre>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">2.3 Composição: Exemplo (Carro e Motor)</h3>
+                <p>Um <code>Carro</code> "é composto por" um <code>Motor</code>. O <code>Motor</code> é uma parte essencial do <code>Carro</code>. Ele é criado <em>dentro</em> do <code>Carro</code> e, se o <code>Carro</code> for destruído, o <code>Motor</code> não faz sentido existir sozinho.</p>
+                <p>Na prática, o objeto <code>Motor</code> é instanciado <strong>dentro</strong> do <code>__init__</code> da classe <code>Carro</code>.</p>
+                
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+class Motor:
+    """
+    Objeto Componente.
+    Seu ciclo de vida depende do Carro.
+    """
+    def __init__(self, potencia_cv):
+        self.potencia_cv = potencia_cv
+        print(f"Motor de {self.potencia_cv}cv criado (componente).")
+
+    def __del__(self):
+        print("Motor sendo destruído (junto com o carro).")
+
+class Carro:
+    """
+    Objeto Compositor (Dono).
+    Ele cria e gerencia o ciclo de vida do Motor.
+    """
+    def __init__(self, modelo, potencia_motor):
+        self.modelo = modelo
+        # COMPOSIÇÃO: O Motor é criado AQUI DENTRO.
+        # O Carro é 'dono' do objeto motor.
+        self.motor = Motor(potencia_motor) 
+        print(f"Carro '{self.modelo}' criado (compositor).")
+
+    def ligar_carro(self):
+        print(f"Ligando {self.modelo} (que tem motor de {self.motor.potencia_cv}cv).")
+
+    def __del__(self):
+        """
+        Quando o Carro é destruído, a referência 'self.motor'
+        também é perdida. Se ninguém mais tiver referência a 
+        esse motor, o 'Garbage Collector' o destruirá também.
+        """
+        print(f"Carro '{self.modelo}' sendo destruído.")
+        # O 'del self.motor' é implícito aqui.
+
+# --- Testando a Composição ---
+print("--- Criando o compositor ---")
+meu_fusca = Carro("Fusca", 50)
+meu_fusca.ligar_carro()
+
+print("\n--- Acessando o componente ---")
+# O motor ainda é um objeto acessível, mas através do carro
+print(f"Potência do motor do Fusca: {meu_fusca.motor.potencia_cv}")
+
+# Não temos uma variável 'motor_fusca' separada.
+# O único 'dono' da instância do Motor é 'meu_fusca'.
+
+print("\n--- Destruindo o compositor (Carro) ---")
+del meu_fusca
+
+print("\n--- Fim do script ---")
+# Ao final, ambas as mensagens __del__ (do Carro e do Motor)
+# terão aparecido, mostrando o ciclo de vida atrelado.
+</code></pre>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">2.4 Resumo do Capítulo 2</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Relação "tem um":</strong> Usada quando um objeto contém outro.</li>
+                    <li><strong>Agregação (Fraca):</strong> Objetos independentes. O "filho" é criado fora e passado como referência. (Ex: <code>Curso.matricular_aluno(aluno_obj)</code>).</li>
+                    <li><strong>Composição (Forte):</strong> Objetos dependentes. O "filho" é criado *dentro* do "pai". (Ex: <code>self.motor = Motor(...)</code> dentro do <code>Carro.__init__</code>).</li>
+                </ul>
+
+                <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <h3 class="text-lg font-semibold text-amber-800">Exercícios Propostos (Capítulo 2)</h3>
+                    <ol class="list-decimal list-inside mt-2 text-amber-700 space-y-1">
+                        <li>Modele a relação entre uma <code>Biblioteca</code> e <code>Livro</code>. Um <code>Livro</code> pode existir sem uma <code>Biblioteca</code>? Esta relação é Agregação ou Composição?</li>
+                        <li>Implemente as classes <code>Biblioteca</code> e <code>Livro</code>, mostrando como a <code>Biblioteca</code> pode "ter" vários <code>Livros</code>.</li>
+                        <li>Modele a relação entre uma <code>Pessoa</code> e um <code>Cerebro</code>. Esta relação é Agregação ou Composição? Justifique.</li>
+                    </ol>
+                </div>
+            </section>
+            
+            <!-- Capítulo 3 -->
+            <section id="cap3" class="content-section space-y-6 bg-white p-6 md:p-8 rounded-lg shadow hidden">
+                <h2 class="text-3xl font-bold border-b pb-2 text-indigo-700">CAPÍTULO 3: Interfaces, Contratos e Protocolos</h2>
+                <p>No Capítulo 1, vimos ABCs como "chefes" de uma hierarquia de herança (is-a). Agora, vamos ver as ABCs e Protocolos como "contratos" que definem uma <strong>capacidade</strong> (can-do).</p>
+                <p>Uma <strong>Interface</strong> (ou Contrato) define um conjunto de métodos que uma classe *promete* implementar. Ela não se importa com a hierarquia, apenas com o comportamento.</p>
+
+                <h3 class="text-2xl font-semibold pt-4">3.1 Interfaces via Classes Abstratas Puras</h3>
+                <p>Podemos usar ABCs para criar "Interfaces Puras". Uma ABC pura é aquela que <strong>só possui métodos abstratos</strong> e nenhum código concreto (nem mesmo no <code>__init__</code>).</p>
+                <p>O nome dessas classes geralmente começa com <code>I</code> (de Interface) ou termina com <code>...able</code> (capaz de...).</p>
+                <p>Vamos criar um contrato <code>IExportavel</code> para objetos que sabem se exportar para um dicionário.</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+import abc
+
+class IExportavel(abc.ABC):
+    """
+    Interface (Contrato) Pura.
+    Define a *capacidade* de ser exportável.
+    Não tem __init__ próprio, não tem métodos concretos.
+    """
+    @abc.abstractmethod
+    def para_dicionario(self) -> dict:
+        """Contrato: deve retornar um dicionário."""
+        pass
+
+# --- Implementando a Interface ---
+# Note que as classes abaixo não têm NENHUMA relação de herança
+# entre si, exceto o fato de que ambas implementam IExportavel.
+
+class ArtigoBlog(IExportavel):
+    def __init__(self, titulo, autor, conteudo):
+        self.titulo = titulo
+        self.autor = autor
+        self.conteudo = conteudo
+    
+    def para_dicionario(self) -> dict:
+        """Cumprindo o contrato IExportavel."""
+        return {
+            "tipo": "Artigo",
+            "titulo": self.titulo,
+            "autor": self.autor
+        }
+
+class ProdutoLoja(IExportavel):
+    def __init__(self, nome, preco, sku):
+        self.nome = nome
+        self.preco = preco
+        self.sku = sku
+
+    def para_dicionario(self) -> dict:
+        """Cumprindo o contrato IExportavel."""
+        return {
+            "tipo": "Produto",
+            "nome_produto": self.nome,
+            "preco_usd": self.preco,
+            "id": self.sku
+        }
+
+# --- Polimorfismo com Interfaces ---
+
+def exportar_dados(lista_de_objetos: list[IExportavel]):
+    """
+    Esta função NÃO SE IMPORTA com o tipo dos objetos.
+    Ela só se importa se eles 'sabem' fazer .para_dicionario().
+    Ela confia no contrato da Interface.
+    """
+    print("--- Exportando Dados (Baseado na Interface) ---")
+    lista_exportada = []
+    for item in lista_de_objetos:
+        # Polimorfismo!
+        lista_exportada.append(item.para_dicionario())
+    
+    print(lista_exportada)
+
+
+# --- Testando ---
+artigo = ArtigoBlog("POO é Incrível", "Prof. Ana", "...")
+produto = ProdutoLoja("Laptop", 1500.00, "LAP123")
+# Um 'str' NÃO cumpre o contrato.
+string_qualquer = "Olá"
+
+# A função aceita qualquer objeto que implemente IExportavel
+itens_para_exportar = [artigo, produto]
+exportar_dados(itens_para_exportar)
+
+# Se tentarmos passar um objeto que NÃO cumpre o contrato,
+# o type hint (list[IExportavel]) nos avisaria em um
+# editor moderno, mas em tempo de execução, daria um AttributeError
+# (pois 'str' não tem 'para_dicionario').
+# exportar_dados([string_qualquer]) # -> AttributeError
+</code></pre>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">3.2 Protocolos (Duck Typing Explícito)</h3>
+                <p>Python, sendo uma linguagem de "Duck Typing" ("Se anda como um pato e faz quack como um pato, então é um pato"), tem uma forma ainda mais flexível de contrato: <code>typing.Protocol</code>.</p>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>ABC (Herança Nominal):</strong> Você *deve* herdar explicitamente (<code>class Artigo(IExportavel)</code>).</li>
+                    <li><strong>Protocol (Herança Estrutural):</strong> Você *não precisa* herdar. Se a sua classe *tiver* os métodos com a assinatura correta, ela "passa" no contrato automaticamente.</li>
+                </ul>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+from typing import Protocol
+
+# --- Definindo o Protocolo ---
+class ITributavel(Protocol):
+    """
+    Define um Protocolo.
+    Qualquer classe que tenha um método .calcular_imposto()
+    que retorna um float, satisfaz este protocolo.
+    """
+    def calcular_imposto(self) -> float:
+        ... # O '...' é usado em protocolos
+
+# --- Classes que Satisfazem o Protocolo ---
+
+class ContaCorrente:
+    """
+    NÃO herda de ITributavel, mas implementa
+    o método exatamente como o protocolo pede.
+    """
+    def __init__(self, saldo, taxa_servico):
+        self.saldo = saldo
+        self.taxa_servico = taxa_servico
+    
+    def calcular_imposto(self) -> float:
+        # Imposto é 1% do saldo, mais a taxa
+        return (self.saldo * 0.01) + self.taxa_servico
+
+class ImovelResidencial:
+    """
+    Também NÃO herda de ITributavel, mas satisfaz.
+    """
+    def __init__(self, valor_venal, aliquota_iptu):
+        self.valor_venal = valor_venal
+        self.aliquota_iptu = aliquota_iptu
+
+    def calcular_imposto(self) -> float:
+        # IPTU
+        return self.valor_venal * self.aliquota_iptu
+
+class ServicoStreaming:
+    """Esta classe NÃO satisfaz o protocolo."""
+    def __init__(self, nome, mensalidade):
+        self.nome = nome
+        self.mensalidade = mensalidade
+    
+    def calcular_mensalidade_anual(self) -> float:
+        return self.mensalidade * 12
+
+# --- Função que exige o Protocolo ---
+
+def calcular_impostos_totais(lista_tributaveis: list[ITributavel]) -> float:
+    """
+    Esta função aceita qualquer objeto que ESTRUTURALMENTE
+    se pareça com um ITributavel.
+    """
+    total = 0.0
+    for item in lista_tributaveis:
+        total += item.calcular_imposto() # Duck Typing!
+    return total
+
+# --- Testando ---
+conta = ContaCorrente(1000, 10)     # Satisfaz (tem .calcular_imposto)
+imovel = ImovelResidencial(200000, 0.005) # Satisfaz
+streaming = ServicoStreaming("NetBits", 29.90) # NÃO Satisfaz
+
+lista_de_bens = [conta, imovel]
+total_devido = calcular_impostos_totais(lista_de_bens)
+
+print(f"Total de impostos a pagar: R$ {total_devido:.2f}")
+
+# A linha abaixo falharia (corretamente) em uma
+# verificação de tipos (como mypy), pois 'streaming'
+# não satisfaz o protocolo ITributavel.
+# calcular_impostos_totais([streaming])
+</code></pre>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">3.3 Resumo do Capítulo 3</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Interface (Contrato):</strong> Define *o que* uma classe pode fazer (capacidade), sem se importar com *o que* ela é (hierarquia).</li>
+                    <li><strong>Interface com ABC:</strong> Usada para criar um contrato *nominal*. As classes devem herdar explicitamente da ABC (<code>class MinhaClasse(IContrato)</code>).</li>
+                    <li><strong>Interface com Protocol:</strong> Usada para criar um contrato *estrutural* (Duck Typing explícito). As classes *não precisam* herdar; basta ter os métodos corretos.</li>
+                </ul>
+
+                <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <h3 class="text-lg font-semibold text-amber-800">Exercícios Propostos (Capítulo 3)</h3>
+                    <ol class="list-decimal list-inside mt-2 text-amber-700 space-y-1">
+                        <li>Usando <code>abc.ABC</code>, crie uma interface <code>INotificavel</code> com um método <code>enviar_notificacao(mensagem: str)</code>.</li>
+                        <li>Crie duas classes, <code>UsuarioEmail</code> e <code>SistemaSMS</code>, que implementam <code>INotificavel</code>.</li>
+                        <li>Usando <code>typing.Protocol</code>, crie um protocolo <code>ILogavel</code> que exige um método <code>log_info(texto: str)</code>. Crie uma classe que satisfaça esse protocolo (sem herdar dele).</li>
+                    </ol>
+                </div>
+            </section>
+            
+            <!-- Capítulo 4 -->
+            <section id="cap4" class="content-section space-y-6 bg-white p-6 md:p-8 rounded-lg shadow hidden">
+                <h2 class="text-3xl font-bold border-b pb-2 text-indigo-700">CAPÍTULO 4: Mixins e Herança Múltipla</h2>
+                <p>A Herança Múltipla permite que uma classe herde de várias superclasses. Em Python, isso é usado principalmente para um padrão chamado <strong>Mixins</strong>.</p>
+
+                <h3 class="text-2xl font-semibold pt-4">4.1 O que são Mixins?</h3>
+                <p>Um <strong>Mixin</strong> é uma classe pequena, focada, que fornece um conjunto específico de funcionalidades, mas que <strong>não foi feita para ser instanciada sozinha</strong>.</p>
+                <p>Ela é feita para ser "misturada" (mixed-in) com outras classes usando herança múltipla, "emprestando" seus métodos.</p>
+                <div class="p-4 bg-stone-50 rounded-md border border-stone-200">
+                    <h4 class="font-semibold text-stone-700">Analogia:</h4>
+                    <p class="mt-1">Pense em Mixins como "pacotes de opcionais" para um carro. Você tem seu <code>Carro</code> (classe principal), e pode adicionar o <code>PacoteDeSomMixin</code> ou o <code>PacoteTetoSolarMixin</code>. O Mixin não é um carro, mas adiciona funcionalidade a ele.</p>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">4.2 Exemplo de Mixin</h3>
+                <p>Vamos criar um Mixin que adiciona a capacidade de salvar um objeto como JSON.</p>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+import json
+
+class SerializadorJsonMixin:
+    """
+    MIXIN: Fornece a funcionalidade .para_json()
+    
+    Assume que a classe que o usar terá um método
+    .para_dicionario() (como a interface do Cap. 3!)
+    """
+    def para_json(self) -> str:
+        # 'self' aqui se refere à instância da classe
+        # que está usando o Mixin (ex: Produto).
+        
+        # O Mixin confia que a classe principal implementará
+        # o método .para_dicionario()
+        if not hasattr(self, 'para_dicionario'):
+            raise TypeError(
+                f"A classe {self.__class__.__name__} "
+                "usou SerializadorJsonMixin mas não implementou .para_dicionario()"
+            )
+            
+        dados_dict = self.para_dicionario()
+        return json.dumps(dados_dict, indent=2)
+
+# --- Classes Principais (de diferentes hierarquias) ---
+
+# Reusando a classe do Cap. 3
+class ProdutoLoja:
+    def __init__(self, nome, preco):
+        self.nome = nome
+        self.preco = preco
+
+    def para_dicionario(self) -> dict:
+        """Método que o Mixin precisa."""
+        return {"nome": self.nome, "preco": self.preco}
+
+class Pessoa:
+    def __init__(self, nome, idade):
+        self.nome = nome
+        self.idade = idade
+
+    def para_dicionario(self) -> dict:
+        """Método que o Mixin precisa."""
+        return {"nome_civil": self.nome, "idade": self.idade}
+
+# --- Aplicando o Mixin com Herança Múltipla ---
+
+class ProdutoExportavel(ProdutoLoja, SerializadorJsonMixin):
+    """
+    Herda de ProdutoLoja (Classe Principal)
+    e de SerializadorJsonMixin (Funcionalidade Extra).
+    """
+    pass
+
+class PessoaExportavel(Pessoa, SerializadorJsonMixin):
+    """
+    Herda de Pessoa (Classe Principal)
+    e de SerializadorJsonMixin (Funcionalidade Extra).
+    """
+    pass
+
+# --- Testando ---
+produto = ProdutoExportavel("Teclado", 150)
+pessoa = PessoaExportavel("Carlos", 30)
+
+print("--- Produto com Mixin ---")
+print(produto.para_json())
+
+print("\n--- Pessoa com Mixin ---")
+print(pessoa.para_json())
+</code></pre>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">4.3 MRO (Method Resolution Order)</h3>
+                <p>O que acontece se duas classes mães tiverem um método com o mesmo nome? (O "Problema do Diamante").</p>
+                <p>Python resolve isso usando um algoritmo chamado <strong>C3 Linearization</strong>, que gera uma ordem determinística de busca de métodos. Essa ordem é chamada de MRO (Ordem de Resolução de Métodos).</p>
+                <p>Sempre que você chama <code>self.metodo()</code>, Python busca na lista do MRO.</p>
+                <p><strong>Regra principal do MRO:</strong> Python busca primeiro na própria classe, depois nas classes mães (da esquerda para a direita, em profundidade) e, por fim, na classe <code>object</code>.</p>
+                <p>Podemos ver o MRO de uma classe usando <code>ClassName.mro()</code> ou <code>ClassName.__mro__</code>.</p>
+                
+                <h4 class="text-xl font-semibold pt-2">Diagrama: O Problema do Diamante</h4>
+                <div class="p-4 bg-stone-50 rounded-md border border-stone-200 text-center font-mono">
+                    <div class="p-2 border border-stone-400 bg-white rounded w-24 mx-auto">[ A ]</div>
+                    <div class="flex justify-center gap-16 my-2">
+                        <span class="text-2xl text-stone-500">↙</span>
+                        <span class="text-2xl text-stone-500">↘</span>
+                    </div>
+                    <div class="flex justify-center gap-10">
+                        <div class="p-2 border border-stone-400 bg-white rounded w-24">[ B ]</div>
+                        <div class="p-2 border border-stone-400 bg-white rounded w-24">[ C ]</div>
+                    </div>
+                    <div class="flex justify-center gap-16 my-2">
+                        <span class="text-2xl text-stone-500">↘</span>
+                        <span class="text-2xl text-stone-500">↙</span>
+                    </div>
+                    <div class="p-2 border border-indigo-500 bg-indigo-100 rounded w-24 mx-auto">[ D ]</div>
+                    <p class="text-sm text-stone-600 mt-4 text-left font-sans"><code>class D(B, C)</code> → MRO: [D, B, C, A, object]</p>
+                    <p class="text-sm text-stone-600 text-left font-sans"><code>class D(C, B)</code> → MRO: [D, C, B, A, object]</p>
+                </div>
+
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+# Exemplo de MRO
+
+class A:
+    def quem_sou(self): print("Eu sou A")
+
+class B(A):
+    def quem_sou(self): print("Eu sou B")
+
+class C(A):
+    def quem_sou(self): print("Eu sou C")
+
+class D_BC(B, C): # Herda primeiro de B, depois de C
+    pass
+
+class D_CB(C, B): # Herda primeiro de C, depois de B
+    pass
+
+# --- Analisando o MRO ---
+print("--- MRO de D_BC (B, C) ---")
+# Ordem: D -> B -> C -> A -> object
+print([cls.__name__ for cls in D_BC.mro()])
+d_bc = D_BC()
+d_bc.quem_sou() # Vai chamar o de B
+
+print("\n--- MRO de D_CB (C, B) ---")
+# Ordem: D -> C -> B -> A -> object
+print([cls.__name__ for cls in D_CB.mro()])
+d_cb = D_CB()
+d_cb.quem_sou() # Vai chamar o de C
+</code></pre>
+                </div>
+                
+                <h3 class="text-2xl font-semibold pt-4">4.4 Boas Práticas com Mixins</h3>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li><strong>Prefixe com <code>...Mixin</code>:</strong> Deixe claro que é um Mixin (ex: <code>JsonMixin</code>, <code>LogMixin</code>).</li>
+                    <li><strong>Mantenha-os sem estado:</strong> Mixins ideais não devem ter seu próprio <code>__init__</code> ou atributos <code>self.x</code>. Eles devem operar com os atributos da classe que os está usando.</li>
+                    <li><strong>Use <code>super()</code> em Mixins:</strong> Se o Mixin *precisa* sobrescrever um método, ele deve usar <code>super().metodo()</code> para garantir que o próximo método no MRO seja chamado.</li>
+                </ol>
+
+                <h3 class="text-2xl font-semibold pt-4">4.5 Resumo do Capítulo 4</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li><strong>Herança Múltipla:</strong> Permite herdar de várias classes.</li>
+                    <li><strong>MRO (Method Resolution Order):</strong> A lista que Python usa para decidir qual método chamar. A ordem da declaração (<code>class D(B, C)</code>) importa.</li>
+                    <li><strong>Mixin:</strong> Um padrão de POO que usa herança múltipla para adicionar funcionalidades "opcionais" (como <code>SerializadorJsonMixin</code>) a classes que podem ser de hierarquias totalmente diferentes.</li>
+                </ul>
+
+                <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <h3 class="text-lg font-semibold text-amber-800">Exercícios Propostos (Capítulo 4)</h3>
+                    <ol class="list-decimal list-inside mt-2 text-amber-700 space-y-1">
+                        <li>Crie um Mixin chamado <code>LogMixin</code> que tenha um método <code>log(self, mensagem: str)</code>. O método deve imprimir algo como <code>[LOG] {mensagem}</code>.</li>
+                        <li>Crie uma classe <code>BancoDeDados</code> que usa o <code>LogMixin</code> para registrar quando se conecta (<code>self.log("Conectado")</code>) e desconecta.</li>
+                        <li>Qual seria o MRO da classe <code>D_BC</code> no exemplo 4.3 se <code>B</code> e <code>C</code> não herdassem de <code>A</code>?</li>
+                    </ol>
+                </div>
+            </section>
+            
+            <!-- Capítulo 5 -->
+            <section id="cap5" class="content-section space-y-6 bg-white p-6 md:p-8 rounded-lg shadow hidden">
+                <h2 class="text-3xl font-bold border-b pb-2 text-indigo-700">CAPÍTULO 5: Modelo Matemático com Classes Abstratas</h2>
+                <p>Este capítulo é uma aplicação prática dos conceitos dos Capítulos 1 e 3: usar ABCs e Polimorfismo para modelar um sistema.</p>
+                <p><strong>O Desafio:</strong> Queremos modelar diferentes tipos de funções matemáticas (Linear, Polinomial, etc.), mas queremos tratá-las de forma uniforme.</p>
+                <p><strong>A Solução:</strong> Criar uma Classe Abstrata <code>Funcao</code> que define o "contrato" de uma função: ela deve ser "avaliável" (capaz de calcular $f(x)$).</p>
+                
+                <h3 class="text-2xl font-semibold pt-4">5.1 A Classe Base: <code>Funcao</code> (ABC)</h3>
+                <p>Abaixo está o código que define a classe abstrata <code>Funcao</code> e suas implementações concretas.</p>
+                
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+import abc
+import math
+
+class Funcao(abc.ABC):
+    """
+    ABC (ou Interface) para Funções Matemáticas.
+    Define o contrato: toda função deve ser 'avaliável'.
+    """
+    
+    @abc.abstractmethod
+    def avaliar(self, x: float) -> float:
+        """Calcula o valor da função f(x) no ponto x."""
+        pass
+
+    def __call__(self, x: float) -> float:
+        """
+        Método mágico __call__
+        Permite tratar a *instância* do objeto como uma função.
+        Ex: f = FuncaoLinear(2, 1)
+            f(5) # <-- Isso chama f.avaliar(5)
+        """
+        return self.avaliar(x)
+
+# --- 5.2 Implementações Concretas ---
+
+class FuncaoLinear(Funcao):
+    """Implementa f(x) = ax + b"""
+    def __init__(self, a: float, b: float):
+        self.a = a
+        self.b = b
+    
+    def avaliar(self, x: float) -> float:
+        """Cumprindo o contrato de Funcao."""
+        return (self.a * x) + self.b
+    
+    def __repr__(self):
+        return f"FuncaoLinear(f(x) = {self.a}x + {self.b})"
+
+class FuncaoPolinomial(Funcao):
+    """Implementa f(x) = c_n * x^n + ... + c_1 * x + c_0"""
+    def __init__(self, coeficientes: list[float]):
+        # coeficientes[0] = c_0, coeficientes[1] = c_1, ...
+        # Ex: [3, -1, 2] -> f(x) = 2x^2 - 1x + 3
+        self.coeficientes = coeficientes
+    
+    def avaliar(self, x: float) -> float:
+        """Calcula o polinômio."""
+        resultado = 0.0
+        for i, coef in enumerate(self.coeficientes):
+            resultado += coef * (x ** i)
+        return resultado
+    
+    def __repr__(self):
+        return f"FuncaoPolinomial(coefs={self.coeficientes})"
+
+class FuncaoTrigonometrica(Funcao):
+    """Implementa f(x) = sin(x) ou f(x) = cos(x)"""
+    def __init__(self, tipo: str = 'sin'):
+        if tipo not in ('sin', 'cos'):
+            raise ValueError("Tipo deve ser 'sin' ou 'cos'")
+        self.tipo = tipo
+        self._func = math.sin if tipo == 'sin' else math.cos
+    
+    def avaliar(self, x: float) -> float:
+        return self._func(x)
+
+    def __repr__(self):
+        return f"FuncaoTrigonometrica(f(x) = {self.tipo}(x))"
+</code></pre>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">5.3 Visualização Interativa das Funções</h3>
+                <p>Para tornar os conceitos deste capítulo mais claros, o gráfico abaixo plota duas das funções que implementamos: <code>f(x) = 2x + 5</code> (Linear) e <code>f(x) = x² + 1</code> (Polinomial). Passe o mouse sobre as linhas para ver os valores de $f(x)$ em cada ponto $x$.</p>
+
+                <div class="chart-container my-6">
+                    <canvas id="funcoesChart"></canvas>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">5.4 Polimorfismo: Avaliando Funções</h3>
+                <p>O código abaixo demonstra o polimorfismo. Criamos uma lista de funções de tipos diferentes (<code>FuncaoLinear</code>, <code>FuncaoPolinomial</code>, etc.), mas podemos tratá-las todas da mesma forma (como <code>Funcao</code>), chamando <code>f(x)</code> em cada uma.</p>
+                
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyCode(this)">Copiar</button>
+<pre><code class="language-python">
+# --- 5.3 Polimorfismo: Avaliando Funções ---
+
+# (Supondo que as classes FuncaoLinear, FuncaoPolinomial, etc.
+# já foram definidas como no bloco de código anterior)
+
+print("--- Criando um portfólia de funções ---")
+# Criamos uma lista de objetos heterogêneos,
+# mas todos obedecem à interface 'Funcao'.
+minhas_funcoes: list[Funcao] = [
+    FuncaoLinear(a=2, b=5),          # f(x) = 2x + 5
+    FuncaoPolinomial(coeficientes=[1, 0, 1]), # f(x) = 1x^2 + 0x + 1  (x^2 + 1)
+    FuncaoTrigonometrica(tipo='cos') # f(x) = cos(x)
+]
+
+# --- Avaliação em um ponto (x=3) ---
+ponto_x = 3
+print(f"\n--- Avaliando todas as funções em x = {ponto_x} ---")
+
+for f in minhas_funcoes:
+    # Graças ao polimorfismo, podemos chamar f(ponto_x)
+    # (que usa o __call__, que chama o .avaliar() específico)
+    resultado = f(ponto_x) 
+    print(f"Função: {f} \t| f({ponto_x}) = {resultado:.4f}")
+
+# --- Avaliação em um intervalo (ex: [0, 1, 2]) ---
+intervalo = [0.0, 1.0, 2.0]
+print(f"\n--- Avaliando no intervalo {intervalo} ---")
+
+for f in minhas_funcoes:
+    print(f"Avaliando {f}:")
+    resultados_intervalo = []
+    for x_val in intervalo:
+        resultados_intervalo.append(f(x_val))
+    print(f"  Resultados f(x): {resultados_intervalo}")
+</code></pre>
+                </div>
+                
+                <h3 class="text-2xl font-semibold pt-4">5.5 Resumo do Capítulo 5</h3>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>Este capítulo foi uma demonstração de como usar ABCs para criar um sistema flexível.</li>
+                    <li>Criamos um "contrato" (<code>Funcao</code>) que exige um comportamento (<code>avaliar</code>).</li>
+                    <li>Implementamos esse contrato em várias classes concretas (<code>FuncaoLinear</code>, <code>FuncaoPolinomial</code>).</li>
+                    <li>Usamos Polimorfismo para tratar todas essas classes de forma idêntica, mesmo que suas lógicas internas (cálculos) sejam totalmente diferentes.</li>
+                    <li>Usamos o método <code>__call__</code> para tornar a sintaxe mais elegante (<code>f(x)</code> em vez de <code>f.avaliar(x)</code>).</li>
+                </ul>
+
+                <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <h3 class="text-lg font-semibold text-amber-800">Exercícios Propostos (Capítulo 5)</h3>
+                    <ol class="list-decimal list-inside mt-2 text-amber-700 space-y-1">
+                        <li>Adicione uma nova classe <code>FuncaoExponencial(Funcao)</code> que modele $f(x) = a \cdot b^x$ (recebe <code>a</code> e <code>b</code> no construtor).</li>
+                        <li>Adicione um método abstrato <code>derivar(self) -> Funcao</code> na ABC <code>Funcao</code>.</li>
+                        <li>Tente implementar o método <code>derivar</code> na classe <code>FuncaoLinear</code>. (Dica: a derivada de $ax+b$ é a função constante $a$, que é uma <code>FuncaoLinear(0, a)</code>).</li>
+                    </ol>
+                </div>
+            </section>
+            
+            <!-- Capítulo 6 -->
+            <section id="cap6" class="content-section space-y-6 bg-white p-6 md:p-8 rounded-lg shadow hidden">
+                <h2 class="text-3xl font-bold border-b pb-2 text-indigo-700">CAPÍTULO 6: Design OO: Python vs. Java</h2>
+                <p>Este capítulo foca nas <em>filosofias</em> de design, comparando Python com linguagens mais rígidas como Java, e revisando quando usar cada ferramenta que aprendemos.</p>
+
+                <h3 class="text-2xl font-semibold pt-4">6.1 Herança Múltipla: Por que Python tem e Java não?</h3>
+                <p>Esta é uma diferença filosófica fundamental.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
+                        <h4 class="font-semibold text-red-700 text-lg">Por que Java (e C#) NÃO tem:</h4>
+                        <ol class="list-decimal list-inside space-y-2 mt-2">
+                            <li><strong>Complexidade (Problema do Diamante):</strong> Como vimos no Capítulo 4, quando <code>D</code> herda de <code>B</code> e <code>C</code>, e ambos herdam de <code>A</code>, qual método <code>A</code> é usado? Os criadores de Java acharam que a complexidade e ambiguidade disso trariam mais problemas do que soluções.</li>
+                            <li><strong>A Solução de Java:</strong> Java *permite* herança múltipla de <strong>Interfaces</strong>. Uma classe Java pode <code>extends</code> (herdar) de UMA classe, mas pode <code>implements</code> (implementar) VÁRIAS interfaces. Isso garante a reutilização de *contrato* (polimorfismo) sem a confusão da reutilização de *código* (herança).</li>
+                        </ol>
+                    </div>
+                    <div class="p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <h4 class="font-semibold text-green-700 text-lg">Por que Python TEM:</h4>
+                         <ol class="list-decimal list-inside space-y-2 mt-2">
+                            <li><strong>Filosofia: "Somos todos adultos aqui."</strong> Python confia no desenvolvedor. Em vez de proibir o recurso, ele fornece uma ferramenta robusta para gerenciá-lo: o <strong>MRO (C3 Linearization)</strong>.</li>
+                            <li><strong>O MRO é Previsível:</strong> O MRO (Cap. 4) resolve o Problema do Diamante de forma explícita e determinística. A ordem de busca é clara (<code>ClassName.mro()</code>), evitando a ambiguidade que Java temia.</li>
+                            <li><strong>Flexibilidade (Mixins):</strong> A herança múltipla é a base do padrão Mixin, que é extremamente útil em Python (como vimos com <code>SerializadorJsonMixin</code>). Permite "misturar" funcionalidades de forma limpa.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <p><strong class="text-stone-700">Vantagens (Python):</strong> Muita flexibilidade, padrão Mixin é poderoso.</p>
+                    <p><strong class="text-stone-700">Desvantagens (Python):</strong> Código pode ficar muito complexo se usado sem critério. Uma classe que herda de 7 outras é difícil de entender e depurar.</p>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">6.2 Quando usar... (O Guia de Decisão)</h3>
+                <p>Aqui está um resumo de quando usar cada conceito de POO que aprendemos em Python:</p>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="text-xl font-semibold">1. Quando usar Classe Abstrata (ABC)?</h4>
+                        <p><strong>Use uma ABC quando:</strong></p>
+                        <ul class="list-disc list-inside space-y-1 mt-1">
+                            <li>Você está definindo a <strong>base de uma hierarquia</strong> (relação "é um").</li>
+                            <li>Você quer que as classes filhas <strong>compartilhem código</strong> (métodos concretos na ABC) e também sigam um <strong>contrato</strong> (métodos abstratos).</li>
+                            <li>Você quer <em>forçar</em> que as subclasses implementem certos métodos.</li>
+                        </ul>
+                        <p class="mt-1 text-sm"><strong>Exemplo:</strong> <code>Veiculo</code> (Cap. 1). Todas as subclasses "são" Veículos, herdam o método concreto <code>frear()</code> e são *forçadas* a implementar <code>ligar()</code> e <code>acelerar()</code>.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-semibold">2. Quando usar Interface (ABC Pura ou Protocolo)?</h4>
+                        <p><strong>Use uma Interface quando:</strong></p>
+                        <ul class="list-disc list-inside space-y-1 mt-1">
+                            <li>Você está definindo uma <strong>capacidade</strong> (relação "sabe fazer" ou "can-do").</li>
+                            <li>Você <strong>não se importa</strong> com a hierarquia da classe, apenas com seu comportamento.</li>
+                            <li>Você quer usar polimorfismo em classes totalmente diferentes.</li>
+                        </ul>
+                        <p class="mt-2 font-semibold">Sub-decisão:</p>
+                        <ul class="list-disc list-inside space-y-1 mt-1 text-sm">
+                            <li>Use <strong>ABC Pura</strong> (herdando de <code>abc.ABC</code>): Se você quer que o contrato seja *nominal* (explícito). <code>class MinhaClasse(IContrato):</code>. É mais seguro para grandes projetos.</li>
+                            <li>Use <strong>Protocolo</strong> (herdando de <code>typing.Protocol</code>): Se você quer que o contrato seja *estrutural* (Duck Typing). <code>class MinhaClasse:</code> (sem herança explícita). É mais "Pythônico", mas pode ser menos óbvio.</li>
+                        </ul>
+                         <p class="mt-1 text-sm"><strong>Exemplo:</strong> <code>IExportavel</code> ou <code>ITributavel</code> (Cap. 3). Um <code>Produto</code> e um <code>ArtigoBlog</code> não têm relação, mas ambos "sabem fazer" <code>para_dicionario()</code>.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xl font-semibold">3. Quando usar Mixin (com Herança Múltipla)?</h4>
+                        <p><strong>Use um Mixin quando:</strong></p>
+                        <ul class="list-disc list-inside space-y-1 mt-1">
+                            <li>Você quer adicionar uma <strong>funcionalidade opcional</strong> ou "extra" a uma classe.</li>
+                            <li>Essa funcionalidade será <strong>reutilizada em muitas classes diferentes</strong> que não compartilham uma hierarquia comum.</li>
+                            <li>A funcionalidade é "sem estado" (não tem seu próprio <code>__init__</code>).</li>
+                        </ul>
+                        <p class="mt-1 text-sm"><strong>Exemplo:</strong> <code>SerializadorJsonMixin</code> (Cap. 4). Adiciona a capacidade <code>.para_json()</code> a *qualquer* classe que já tenha um <code>.para_dicionario()</code>, seja ela <code>Produto</code>, <code>Pessoa</code> ou <code>Relatorio</code>.</p>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-semibold pt-4">6.3 Resumo do Capítulo 6</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-stone-200 border border-stone-200 rounded-lg">
+                        <thead class="bg-stone-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Conceito</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Relação</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-stone-500 uppercase tracking-wider">Quando Usar em Python</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-stone-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-stone-900">Herança Simples</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-stone-600">"É um"</td>
+                                <td class="px-6 py-4 text-stone-600">Para criar uma especialização de uma classe base. (Ex: <code>Gerente</code> é um <code>Funcionario</code>).</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-stone-900">Classe Abstrata (ABC)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-stone-600">"É um" (Contrato)</td>
+                                <td class="px-6 py-4 text-stone-600">Para definir a base de uma família de classes, forçando a implementação e compartilhando código. (Ex: <code>Veiculo</code>).</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-stone-900">Interface (ABC/Protocol)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-stone-600">"Sabe fazer"</td>
+                                <td class="px-6 py-4 text-stone-600">Para definir um contrato (capacidade) que classes de diferentes famílias podem implementar. (Ex: <code>ITributavel</code>).</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-stone-900">Mixin (Herança Múltipla)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-stone-600">"Adiciona um"</td>
+                                <td class="px-6 py-4 text-stone-600">Para "misturar" uma funcionalidade extra e reutilizável em classes existentes. (Ex: <code>LogMixin</code>).</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-stone-900">Agregação</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-stone-600">"Tem um"</td>
+                                <td class="px-6 py-4 text-stone-600">Relação fraca. Ciclo de vida independente. (Ex: <code>Curso</code> e <code>Aluno</code>).</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-stone-900">Composição</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-stone-600">"É parte de"</td>
+                                <td class="px-6 py-4 text-stone-600">Relação forte. Ciclo de vida dependente. (Ex: <code>Carro</code> e <code>Motor</code>).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <h3 class="text-lg font-semibold text-amber-800">Exercícios Propostos (Capítulo 6)</h3>
+                    <ol class="list-decimal list-inside mt-2 text-amber-700 space-y-1">
+                        <li>(Teórico) Você está modelando <code>Guerreiro</code>, <code>Mago</code> e <code>Arqueiro</code> em um jogo. Todos eles precisam "atacar", mas de formas diferentes. Você usaria Herança Simples, ABC ou Interface (Protocolo) como base? Por quê?</li>
+                        <li>(Teórico) Agora, você quer que *alguns* desses personagens (e também alguns <code>Monstros</code>) possam ficar "envenenados". O status "envenenado" tem uma lógica própria (ex: <code>aplicar_dano_veneno()</code>). Você usaria Herança, ABC ou Mixin para adicionar essa funcionalidade? Por quê?</li>
+                        <li>(Teórico) Por que o MRO é tão importante para o padrão Mixin funcionar corretamente?</li>
+                    </ol>
+                </div>
+
+                <div class="mt-8 p-6 bg-indigo-50 border border-indigo-200 rounded-lg text-center">
+                    <h3 class="text-2xl font-bold text-indigo-800">Conclusão do Livro</h3>
+                    <p class="mt-4 text-lg">Você chegou ao fim da revisão! Cobrimos os pilares do design OO avançado em Python:</p>
+                    <ul class="list-none mt-2 space-y-1 text-indigo-700">
+                        <li>1. Hierarquia e Contrato (ABC)</li>
+                        <li>2. Ciclo de Vida (Composição/Agregação)</li>
+                        <li>3. Capacidade (Interfaces/Protocolos)</li>
+                        <li>4. Reutilização Flexível (Mixins/MRO)</li>
+                    </ul>
+                    <p class="mt-4 text-lg font-semibold">Entender a <em>diferença</em> entre "é um", "tem um" e "sabe fazer" é a chave para um bom design.</p>
+                    <p class="mt-4 text-2xl font-bold text-green-600">Boa sorte na prova!</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('.nav-button');
+            const contentSections = document.querySelectorAll('.content-section');
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            let activeSection = document.getElementById('intro');
+            let activeButton = document.querySelector('.nav-button[data-target="intro"]');
+            let chartInstance = null;
+
+            function showSection(targetId) {
+                // Oculta a seção ativa
+                if (activeSection) {
+                    activeSection.classList.add('hidden');
+                }
+                // Remove a classe 'active' do botão ativo
+                if (activeButton) {
+                    activeButton.classList.remove('active');
+                }
+
+                // Mostra a nova seção
+                const newSection = document.getElementById(targetId);
+                if (newSection) {
+                    newSection.classList.remove('hidden');
+                    activeSection = newSection;
+                }
+
+                // Adiciona a classe 'active' ao novo botão
+                const newButton = document.querySelector(`.nav-button[data-target="${targetId}"]`);
+                if (newButton) {
+                    newButton.classList.add('active');
+                    activeButton = newButton;
+                }
+                
+                // Rola para o topo da área de conteúdo
+                document.getElementById('content-area').scrollTop = 0;
+
+                // Lógica do Gráfico:
+                // Se a nova seção for o cap5 E o gráfico não foi criado, crie-o.
+                if (targetId === 'cap5' && !chartInstance) {
+                    initCap5Chart();
+                }
+
+                // Fecha o menu mobile ao selecionar
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('hidden');
+                }
+            }
+
+            // Event listeners para botões de navegação
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    showSection(targetId);
+                });
+            });
+
+            // Toggle do menu mobile
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                overlay.classList.toggle('hidden');
+            });
+
+            // Fechar menu ao clicar no overlay
+            overlay.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            });
+
+            // Função para inicializar o gráfico do Cap. 5
+            function initCap5Chart() {
+                const ctx = document.getElementById('funcoesChart').getContext('2d');
+                
+                // f(x) = 2x + 5
+                const linearFunc = (x) => (2 * x) + 5;
+                // f(x) = x^2 + 1
+                const polyFunc = (x) => (x * x) + 1;
+
+                const labels = [];
+                const dataLinear = [];
+                const dataPoly = [];
+
+                for (let x = -5; x <= 5; x += 0.5) {
+                    labels.push(x.toString());
+                    dataLinear.push(linearFunc(x));
+                    dataPoly.push(polyFunc(x));
+                }
+
+                chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'f(x) = 2x + 5 (Linear)',
+                                data: dataLinear,
+                                borderColor: 'rgb(79, 70, 229)', // indigo-600
+                                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                                tension: 0.1,
+                                fill: false
+                            },
+                            {
+                                label: 'f(x) = x² + 1 (Polinomial)',
+                                data: dataPoly,
+                                borderColor: 'rgb(217, 119, 6)', // amber-600
+                                backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                                tension: 0.1,
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Visualização de Funções Matemáticas'
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Valor de x'
+                                }
+                            },
+                            y: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: 'Valor de f(x)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Função para copiar código
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const code = codeBlock.innerText;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.innerText = 'Copiado!';
+                setTimeout(() => {
+                    button.innerText = 'Copiar';
+                }, 2000);
+            }).catch(err => {
+                console.error('Erro ao copiar código: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
